@@ -1,0 +1,145 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-128) var(--spacing-40) var(--spacing-160);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 80vh;
+}
+
+.hero-content {
+  max-width: 700px;
+  position: relative;
+  z-index: 10;
+}
+
+.hero-title {
+  margin-bottom: var(--spacing-24);
+}
+
+.hero-title em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.hero-subtitle {
+  margin-bottom: var(--spacing-40);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-actions {
+  display: flex;
+  gap: var(--spacing-16);
+  justify-content: center;
+}
+
+/* Floating Artifacts */
+.hero-artifacts {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.artifact-stat {
+  position: absolute;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.artifact-stat.top-left {
+  top: 15%;
+  left: 40%;
+  margin-left: -420px;
+  transform: rotate(-4deg);
+}
+
+.artifact-stat.bottom-right {
+  top: 60%;
+  left: 60%;
+  margin-left: 200px;
+  transform: rotate(4deg);
+}
+
+@media (max-width: 900px) {
+  .hero-artifacts {
+    display: none;
+  }
+}
+
+.artifact-label {
+  font-family: var(--font-sohne);
+  font-size: 14px;
+  color: var(--color-slate-gray);
+}
+
+.artifact-value {
+  font-family: var(--font-sohne);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--color-ink-black);
+}
+
+.artifact-delta {
+  font-size: 14px;
+  font-family: var(--font-sohne);
+  color: var(--color-ink-black);
+}
+
+/* Features Section */
+.features-section {
+  background-color: var(--surface-section-fog);
+  padding: var(--spacing-128) var(--spacing-40);
+  margin-left: -50vw;
+  margin-right: -50vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-title {
+  max-width: var(--page-max-width);
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--spacing-80);
+}
+
+.features-grid {
+  max-width: var(--page-max-width);
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-24);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 14px;
+  color: var(--color-ash-gray);
+  margin-bottom: var(--spacing-16);
+}
+
+.mt-12 { margin-top: 12px; }
+.mt-20 { margin-top: 20px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-20 { margin-bottom: 20px; }

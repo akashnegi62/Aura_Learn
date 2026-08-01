@@ -1,0 +1,56 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sohne);
+  font-weight: 400; /* As per design spec */
+  font-size: 16px;
+  border-radius: var(--radius-buttons);
+  padding: 0 20px;
+  height: 48px;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  outline: none;
+  border: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Filled Pill Button */
+.btn-filled {
+  background-color: var(--color-ink-black);
+  color: var(--color-paper-white);
+  border: 1px solid var(--color-ink-black); /* Invisible against fill but keeps sizing consistent */
+}
+
+.btn-filled:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* Ghost Pill Button */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-ink-black);
+  border: 1px solid var(--color-ink-black);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background-color: rgba(23, 25, 28, 0.04);
+}
+
+/* Loading Spinner */
+.btn-spinner {
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,106 @@
+.quizzes-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-64);
+  padding: var(--spacing-80) 0;
+}
+
+.quiz-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  width: 100%;
+  max-width: 600px;
+}
+
+.quiz-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mt-8 { margin-top: 8px; }
+.mt-32 { margin-top: 32px; }
+.mt-40 { margin-top: 40px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-40 { margin-bottom: 40px; }
+.mb-8 { margin-bottom: 8px; }
+.flex { display: flex; }
+.gap-16 { gap: 16px; }
+.justify-center { justify-content: center; }
+
+/* Active Quiz */
+.active-quiz-page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: var(--spacing-80) 0;
+}
+
+.quiz-progress {
+  color: var(--color-ash-gray);
+  font-size: 15px;
+  margin-bottom: var(--spacing-40);
+  padding-bottom: var(--spacing-16);
+  border-bottom: 1px solid #ececec;
+}
+
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.quiz-option {
+  padding: var(--spacing-20) var(--spacing-24);
+  background: var(--surface-card-mist);
+  border-radius: var(--radius-inputs);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.quiz-option:hover:not(.disabled):not(.correct):not(.incorrect) {
+  background: rgba(23, 25, 28, 0.04);
+}
+
+.quiz-option.selected {
+  border-color: var(--color-ink-black);
+  background: rgba(23, 25, 28, 0.03);
+}
+
+.quiz-option.correct {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.quiz-option.incorrect {
+  background: #ffebee;
+  border-color: #ef5350;
+  color: #c62828;
+}
+
+.quiz-option.disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.option-text {
+  font-size: 16px;
+}
+
+.quiz-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Score Display */
+.score-display {
+  font-family: var(--font-signifier);
+  font-size: 48px;
+  color: var(--color-slate-gray);
+}
+.score-display span {
+  color: var(--color-ink-black);
+}

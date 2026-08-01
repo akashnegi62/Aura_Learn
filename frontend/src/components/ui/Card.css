@@ -1,0 +1,38 @@
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Neutral Card - Workhorse for features/tabs */
+.card-neutral {
+  background-color: var(--surface-card-mist);
+  border-radius: var(--radius-cards);
+  border: none;
+  box-shadow: none;
+  padding: 32px 20px;
+}
+
+/* Accent Peach Card - Rare callout */
+.card-accent {
+  background-color: var(--surface-accent-blush);
+  color: var(--color-sienna-brown);
+  border-radius: var(--radius-cards);
+  border: none;
+  box-shadow: none;
+  padding: 40px;
+}
+.card-accent h1,
+.card-accent h2,
+.card-accent h3,
+.card-accent p {
+  color: var(--color-sienna-brown);
+}
+
+/* Floating Artifact - Product UI Fragments (Charts, UI Mockups) */
+.card-floating {
+  background-color: var(--surface-elevated-white);
+  border-radius: var(--radius-elevatedcards);
+  box-shadow: var(--shadow-elevated);
+  padding: 16px 20px 12px 12px;
+  border: none;
+}
