@@ -79,7 +79,7 @@ export default function LoginPage() {
         </Button>
         
         <p className="text-secondary mt-20 text-center">
-          Don't have an account? <Link href="/signup" className="text-link">Sign up</Link>
+          Don&apos;t have an account? <Link href="/signup" className="text-link">Sign up</Link>
         </p>
       </Card>
     </div>
