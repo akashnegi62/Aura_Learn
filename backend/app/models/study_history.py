@@ -7,5 +7,6 @@ class StudyHistory(Base):
     __tablename__ = "study_history"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), index=True, nullable=True)
     action = Column(String(255), nullable=False) # e.g. "generated_flashcards", "took_quiz", "uploaded_doc"
     created_at = Column(DateTime(timezone=True), server_default=func.now())

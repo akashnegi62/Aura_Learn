@@ -149,3 +149,17 @@ h1, h2, h3, h4, h5, h6 {
   content: ' →';
   white-space: pre;
 }
+
+/* Layout Utilities */
+.center-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}

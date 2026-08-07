@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import Loader from '@/components/ui/Loader';
 import Button from '@/components/ui/Button';
+import { useUserStore } from '@/store/useUserStore';
 import './Flashcards.css';
 
 interface Flashcard {
@@ -20,8 +21,15 @@ export default function FlashcardsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
+  const { user, anonymousFlashcards } = useUserStore();
+
   useEffect(() => {
     async function fetchCards() {
+      if (!user) {
+        setCards((anonymousFlashcards as unknown as Flashcard[]) || []);
+        setLoading(false);
+        return;
+      }
       try {
         const res = await api.get('/flashcards');
         setCards(res.data.flashcards || []);
@@ -32,7 +40,7 @@ export default function FlashcardsPage() {
       }
     }
     fetchCards();
-  }, []);
+  }, [user, anonymousFlashcards]);
 
   const handleNext = () => {
     setIsFlipped(false);

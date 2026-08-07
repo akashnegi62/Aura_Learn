@@ -90,10 +90,18 @@
 }
 
 .artifact-value {
-  font-family: var(--font-sohne);
+  font-family: var(--font-outfit);
   font-size: 32px;
   font-weight: 500;
-  color: var(--color-ink-black);
+  margin: 4px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-icon {
+  color: var(--color-ash-gray);
 }
 
 .artifact-delta {

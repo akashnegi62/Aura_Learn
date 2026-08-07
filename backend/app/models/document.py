@@ -7,6 +7,7 @@ class Document(Base):
     __tablename__ = "documents"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), index=True, nullable=True)
     filename = Column(String(255), nullable=False)
     text = Column(Text, nullable=False)
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())

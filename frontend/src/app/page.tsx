@@ -5,9 +5,12 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import Link from 'next/link';
+import { useUserStore } from '@/store/useUserStore';
+import { Lock as LockIcon } from 'lucide-react';
 import './Dashboard.css';
 
 export default function Home() {
+  const { user } = useUserStore();
   const [stats, setStats] = useState({ total_flashcards: 0, total_quizzes: 0, total_documents: 0 });
   const [loading, setLoading] = useState(true);
 
@@ -53,14 +56,18 @@ export default function Home() {
         <div className="hero-artifacts">
           <Card variant="floating" className="artifact-stat top-left">
             <span className="artifact-label">Flashcards Generated</span>
-            <div className="artifact-value">{loading ? '—' : stats.total_flashcards}</div>
-            <div className="artifact-delta">↑ 12% vs last week</div>
+            <div className="artifact-value">
+              {loading ? '—' : (!user ? <><LockIcon size={16} className="inline-icon" /> 0</> : stats.total_flashcards)}
+            </div>
+            <div className="artifact-delta">{!user ? 'Locked for anonymous users' : '↑ 12% vs last week'}</div>
           </Card>
           
           <Card variant="floating" className="artifact-stat bottom-right">
             <span className="artifact-label">Active Quizzes</span>
-            <div className="artifact-value">{loading ? '—' : stats.total_quizzes}</div>
-            <div className="artifact-delta text-secondary">Ready to take</div>
+            <div className="artifact-value">
+              {loading ? '—' : (!user ? <><LockIcon size={16} className="inline-icon" /> 0</> : stats.total_quizzes)}
+            </div>
+            <div className="artifact-delta text-secondary">{!user ? 'Locked for anonymous users' : 'Ready to take'}</div>
           </Card>
         </div>
       </section>

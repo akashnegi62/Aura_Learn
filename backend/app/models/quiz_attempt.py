@@ -7,6 +7,7 @@ class QuizAttempt(Base):
     __tablename__ = "quiz_attempts"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), index=True, nullable=True)
     quiz_id = Column(String(36), ForeignKey("quizzes.id", ondelete="CASCADE"), nullable=False)
     score = Column(Integer, nullable=False, default=0)
     total = Column(Integer, nullable=False, default=0)

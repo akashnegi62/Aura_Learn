@@ -6,6 +6,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Loader from '@/components/ui/Loader';
 import { api, apiFormData } from '@/lib/api';
+import { useUserStore } from '@/store/useUserStore';
 import { ArrowUp } from 'lucide-react';
 import './Upload.css';
 
@@ -14,6 +15,7 @@ export default function UploadPage() {
   const [documentId, setDocumentId] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'uploading' | 'generating'>('idle');
   const [generateMode, setGenerateMode] = useState<'flashcards' | 'quiz'>('flashcards');
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -41,16 +43,20 @@ export default function UploadPage() {
     }
   };
 
+  const { user, setAnonymousQuiz, setAnonymousFlashcards } = useUserStore();
+
   const handleGenerate = async () => {
     if (!documentId) return;
     setStatus('generating');
     
     try {
       if (generateMode === 'flashcards') {
-        await api.post('/generate/flashcards', { document_id: documentId, num_cards: 10 });
+        const res = await api.post('/generate/flashcards', { document_id: documentId, num_cards: 10 });
+        if (!user) setAnonymousFlashcards(res.data.flashcards);
         router.push('/flashcards');
       } else {
-        await api.post('/generate/quiz', { document_id: documentId, difficulty: 'medium', num_questions: 10 });
+        const res = await api.post('/generate/quiz', { document_id: documentId, difficulty, num_questions: 10 });
+        if (!user) setAnonymousQuiz(res.data);
         router.push('/quizzes');
       }
     } catch (err) {
@@ -124,6 +130,31 @@ export default function UploadPage() {
                 Multiple Choice
               </button>
             </div>
+            
+            {generateMode === 'quiz' && (
+              <div className="difficulty-selector" style={{ display: 'flex', gap: '8px', marginBottom: '24px', justifyContent: 'center' }}>
+                {['easy', 'medium', 'hard'].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
+                    style={{
+                      padding: '6px 16px',
+                      borderRadius: '20px',
+                      border: `1px solid ${difficulty === level ? 'var(--color-ink-black)' : 'var(--color-silver-gray)'}`,
+                      backgroundColor: difficulty === level ? 'var(--color-ink-black)' : 'transparent',
+                      color: difficulty === level ? 'var(--color-paper-white)' : 'var(--color-ash-gray)',
+                      fontFamily: 'var(--font-inter)',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            )}
             
             <Button 
               variant="filled" 

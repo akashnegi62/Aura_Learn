@@ -21,7 +21,7 @@ async def generate_with_gemini(system_prompt: str, user_prompt: str) -> str:
     if not settings.GEMINI_API_KEY:
         raise ValueError("GEMINI_API_KEY is not configured")
 
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
     
     combined_prompt = f"System Instructions:\n{system_prompt}\n\nUser Request:\n{user_prompt}"
     

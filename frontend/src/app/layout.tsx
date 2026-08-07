@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: 'AI-powered study materials generated from your documents.',
 };
 
+import AuthProvider from '@/components/AuthProvider';
+
 export default function RootLayout({
   children,
 }: {
@@ -15,12 +17,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="app-container">
-          <Navigation />
-          <main className="main-content">
-            {children}
-          </main>
-        </div>
+        <AuthProvider>
+          <div className="app-container">
+            <Navigation />
+            <main className="main-content">
+              {children}
+            </main>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

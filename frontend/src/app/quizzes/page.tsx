@@ -5,6 +5,8 @@ import { api } from '@/lib/api';
 import Loader from '@/components/ui/Loader';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import { useUserStore } from '@/store/useUserStore';
+import { Lock as LockIcon } from 'lucide-react';
 import './Quizzes.css';
 
 interface QuizQuestion {
@@ -21,6 +23,7 @@ interface Quiz {
 }
 
 export default function QuizzesPage() {
+  const { user, anonymousQuiz } = useUserStore();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -33,6 +36,11 @@ export default function QuizzesPage() {
 
   useEffect(() => {
     async function fetchQuizzes() {
+      if (!user) {
+        setQuizzes(anonymousQuiz ? [anonymousQuiz as unknown as Quiz] : []);
+        setLoading(false);
+        return;
+      }
       try {
         const res = await api.get('/quizzes');
         setQuizzes(res.data);
@@ -43,7 +51,7 @@ export default function QuizzesPage() {
       }
     }
     fetchQuizzes();
-  }, []);
+  }, [user, anonymousQuiz]);
 
   const startQuiz = (quiz: Quiz) => {
     setActiveQuiz(quiz);
@@ -78,14 +86,16 @@ export default function QuizzesPage() {
       setIsAnswered(false);
     } else {
       setQuizFinished(true);
-      try {
-        await api.post('/quizzes/submit', {
-          quiz_id: activeQuiz.id,
-          score: score + (selectedOption === activeQuiz.questions[currentQIndex].answer ? 1 : 0),
-          total: activeQuiz.questions.length
-        });
-      } catch (err) {
-        console.error("Failed to submit score", err);
+      if (user) {
+        try {
+          await api.post('/quizzes/submit', {
+            quiz_id: activeQuiz.id,
+            score: score + (selectedOption === activeQuiz.questions[currentQIndex].answer ? 1 : 0),
+            total: activeQuiz.questions.length
+          });
+        } catch (err) {
+          console.error("Failed to submit score", err);
+        }
       }
     }
   };
@@ -133,6 +143,14 @@ export default function QuizzesPage() {
         <div className="score-display">
           <span>{score}</span> / {activeQuiz.questions.length}
         </div>
+        
+        {!user && (
+          <div className="text-secondary mt-20" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px' }}>
+            <LockIcon size={16} />
+            <span>Score locked. Sign in to track your progress.</span>
+          </div>
+        )}
+        
         <div className="mt-40 flex gap-16 justify-center">
           <Button variant="ghost" onClick={() => startQuiz(activeQuiz)}>Retake</Button>
           <Button variant="filled" onClick={() => setActiveQuiz(null)}>Back to Quizzes</Button>
@@ -146,8 +164,26 @@ export default function QuizzesPage() {
 
   return (
     <div className="active-quiz-page animate-fade-in">
-      <div className="quiz-progress">
+      <div className="quiz-progress" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>Question {currentQIndex + 1} of {activeQuiz.questions.length}</span>
+        {!isAnswered ? (
+          <Button 
+            variant="filled" 
+            disabled={!selectedOption} 
+            onClick={handleSubmit}
+            style={{ padding: '8px 16px', fontSize: '14px' }}
+          >
+            Submit Answer
+          </Button>
+        ) : (
+          <Button 
+            variant="filled" 
+            onClick={handleNext}
+            style={{ padding: '8px 16px', fontSize: '14px' }}
+          >
+            {currentQIndex < activeQuiz.questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+          </Button>
+        )}
       </div>
 
       <div className="question-container">
@@ -183,24 +219,6 @@ export default function QuizzesPage() {
           </Card>
         )}
 
-        <div className="quiz-controls mt-40">
-          {!isAnswered ? (
-            <Button 
-              variant="filled" 
-              disabled={!selectedOption} 
-              onClick={handleSubmit}
-            >
-              Submit Answer
-            </Button>
-          ) : (
-            <Button 
-              variant="filled" 
-              onClick={handleNext}
-            >
-              {currentQIndex < activeQuiz.questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
-            </Button>
-          )}
-        </div>
       </div>
     </div>
   );

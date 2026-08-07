@@ -13,10 +13,14 @@ from app.services.ai_service import generate_flashcards, generate_quiz
 
 router = APIRouter(prefix="/generate", tags=["Generation"])
 
+from typing import Optional
+from app.api.deps import get_current_user
+
 @router.post("/flashcards", response_model=FlashcardListResponse)
 async def generate_flashcards_api(
     req: FlashcardGenerateRequest,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    user_id: Optional[str] = Depends(get_current_user)
 ):
     # Verify doc exists
     result = await db.execute(select(Document).where(Document.id == req.document_id))
@@ -38,13 +42,14 @@ async def generate_flashcards_api(
             question=fc_data.question,
             answer=fc_data.answer,
             explanation=fc_data.explanation,
-            topic=fc_data.topic
+            topic=fc_data.topic,
+            user_id=user_id
         )
         db.add(db_fc)
         saved_cards.append(db_fc)
     
     # Log
-    db.add(StudyHistory(action=f"generated_flashcards: {len(saved_cards)} for doc {document.id}"))
+    db.add(StudyHistory(action=f"generated_flashcards: {len(saved_cards)} for doc {document.id}", user_id=user_id))
     await db.commit()
     
     # Refresh to get IDs
@@ -56,7 +61,8 @@ async def generate_flashcards_api(
 @router.post("/quiz", response_model=QuizResponse)
 async def generate_quiz_api(
     req: QuizGenerateRequest,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    user_id: Optional[str] = Depends(get_current_user)
 ):
     # Verify doc
     result = await db.execute(select(Document).where(Document.id == req.document_id))
@@ -73,7 +79,8 @@ async def generate_quiz_api(
     # Create Quiz
     db_quiz = Quiz(
         document_id=document.id,
-        difficulty=req.difficulty
+        difficulty=req.difficulty,
+        user_id=user_id
     )
     db.add(db_quiz)
     await db.flush() # get quiz id
@@ -89,7 +96,7 @@ async def generate_quiz_api(
         )
         db.add(db_q)
         
-    db.add(StudyHistory(action=f"generated_quiz: {db_quiz.id}"))
+    db.add(StudyHistory(action=f"generated_quiz: {db_quiz.id}", user_id=user_id))
     await db.commit()
     await db.refresh(db_quiz)
     

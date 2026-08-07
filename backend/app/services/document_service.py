@@ -6,7 +6,9 @@ from app.services.docx_service import extract_text_from_docx
 from app.models.study_history import StudyHistory
 import uuid
 
-async def process_and_save_document(file: UploadFile, db: AsyncSession) -> Document:
+from typing import Optional
+
+async def process_and_save_document(file: UploadFile, db: AsyncSession, user_id: Optional[str] = None) -> Document:
     """
     Reads an uploaded file, extracts text based on its type, and saves it to the database.
     """
@@ -34,12 +36,13 @@ async def process_and_save_document(file: UploadFile, db: AsyncSession) -> Docum
     # Save to database
     db_document = Document(
         filename=filename,
-        text=text
+        text=text,
+        user_id=user_id
     )
     db.add(db_document)
     
     # Log to study history
-    history = StudyHistory(action=f"uploaded_doc: {filename}")
+    history = StudyHistory(action=f"uploaded_doc: {filename}", user_id=user_id)
     db.add(history)
     
     await db.commit()
