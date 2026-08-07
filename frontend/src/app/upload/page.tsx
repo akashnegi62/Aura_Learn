@@ -17,16 +17,46 @@ export default function UploadPage() {
   const [generateMode, setGenerateMode] = useState<'flashcards' | 'quiz'>('flashcards');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user, setAnonymousQuiz, setAnonymousFlashcards } = useUserStore();
   const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      
+      if (selectedFile.size > 2 * 1024 * 1024) {
+        alert("File size exceeds 2MB limit. Please choose a smaller file.");
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+      
+      const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword', 'text/plain'];
+      const validExtensions = ['.pdf', '.docx', '.doc', '.txt'];
+      const fileExtension = selectedFile.name.substring(selectedFile.name.lastIndexOf('.')).toLowerCase();
+      
+      if (!validTypes.includes(selectedFile.type) && !validExtensions.includes(fileExtension)) {
+        alert("Invalid file type. Please upload a PDF, DOCX, or TXT file.");
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+      
+      setFile(selectedFile);
     }
   };
 
   const handleUpload = async () => {
     if (!file) return;
+    
+    // Check anonymous limit
+    if (!user) {
+      const uploadCount = parseInt(localStorage.getItem('anonymousUploadCount') || '0', 10);
+      if (uploadCount >= 1) {
+        alert("You have reached your limit of 1 free upload. Please log in to process more documents.");
+        router.push('/login');
+        return;
+      }
+    }
+
     setStatus('uploading');
     
     const formData = new FormData();
@@ -35,15 +65,23 @@ export default function UploadPage() {
     try {
       const res = await apiFormData.post('/upload', formData);
       setDocumentId(res.data.id);
+      
+      if (!user) {
+        const uploadCount = parseInt(localStorage.getItem('anonymousUploadCount') || '0', 10);
+        localStorage.setItem('anonymousUploadCount', (uploadCount + 1).toString());
+      }
+      
       setStatus('idle');
     } catch (err) {
       console.error("Upload failed", err);
       setStatus('idle');
-      alert('Upload failed. Please try again.');
+      const error = err as { response?: { data?: { detail?: string } } };
+      const errorMessage = error.response?.data?.detail || 'Upload failed. Please try again.';
+      alert(errorMessage);
     }
   };
 
-  const { user, setAnonymousQuiz, setAnonymousFlashcards } = useUserStore();
+
 
   const handleGenerate = async () => {
     if (!documentId) return;

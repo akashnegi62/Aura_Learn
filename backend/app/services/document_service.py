@@ -1,5 +1,7 @@
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func
+from datetime import datetime
 from app.models.document import Document
 from app.services.pdf_service import extract_text_from_pdf
 from app.services.docx_service import extract_text_from_docx
@@ -12,11 +14,28 @@ async def process_and_save_document(file: UploadFile, db: AsyncSession, user_id:
     """
     Reads an uploaded file, extracts text based on its type, and saves it to the database.
     """
+    if user_id:
+        # Enforce 10 uploads per day limit for authenticated users
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        stmt = select(func.count(Document.id)).where(
+            Document.user_id == user_id,
+            Document.uploaded_at >= today_start
+        )
+        result = await db.execute(stmt)
+        upload_count = result.scalar_one_or_none() or 0
+        if upload_count >= 10:
+            raise HTTPException(status_code=429, detail="Daily upload limit of 10 reached. Please try again tomorrow.")
+
     filename = file.filename or "unknown"
     content_type = file.content_type
     
     # Read file into memory
     file_bytes = await file.read()
+    
+    # Check file size (2MB limit)
+    if len(file_bytes) > 2 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File size exceeds the 2MB limit.")
+        
     
     text = ""
     
